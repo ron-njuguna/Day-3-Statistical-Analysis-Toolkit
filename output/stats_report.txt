@@ -1,0 +1,37 @@
+=== Statistics report: daily_deposits_kes ===
+Rows read         : 40
+Valid values      : 35
+Rejected values   : 5
+  row 7: '' (missing value)
+  row 10: '-' (placeholder, not a number)
+  row 14: 'n/a' (placeholder, not a number)
+  row 25: '12,40O' (not a valid number, contains letters or stray characters)
+  row 29: '' (missing value)
+
+                    all data                 outliers removed
+count               35                       31
+mean                22,400.00                18,349.65
+median              18,805.47                18,506.72
+mode                none                     none
+variance (sample)   328,019,873.36           10,116,378.52
+std dev (sample)    18,111.32                3,180.63
+min / max           1,200.00 / 96,500.00     12,772.70 / 26,725.69
+Q1 / Q3             15,998.40 / 20,977.21    15,998.40 / 20,730.60
+IQR                 4,978.81                 4,732.20
+
+Outlier fences      : lower 8,530.19, upper 28,445.41
+Outliers            : 96,500.00 (2026-09-20, AG-104), 1,200.00 (2026-10-02, AG-104), 88,400.00 (2026-10-06, AG-104), 29,060.99 (2026-10-07, AG-101)
+
+=== NumPy verification ===
+mean      MATCH
+median    MATCH
+variance  MATCH  (ddof=1)
+std dev   MATCH
+Q1 / Q3   MATCH  (method=linear)
+
+=== Unit tests ===
+Ran 12 tests in 0.029s
+OK
+
+=== Notes for the risk team ===
+The IQR rule flags 4 of 35 valid days: 3 unusually high (96,500.00 on 2026-09-20 by AG-104, 88,400.00 on 2026-10-06 by AG-104, 29,060.99 on 2026-10-07 by AG-101) and 1 unusually low (1,200.00 on 2026-10-02 by AG-104), and they come from agents AG-101, AG-104. Very high totals can mean fraud or structuring, a bulk float top-up logged as a deposit, or an extra digit typed by the agent, while very low totals can mean a float shortage, a network outage or a missing digit. None were deleted from the source data; they only move the mean from 22,400.00 to 18,349.65, so each should be checked against the M-Pesa statement for that agent and day before being called genuine or an error.
